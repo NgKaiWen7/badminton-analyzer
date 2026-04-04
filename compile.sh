@@ -1,9 +1,8 @@
 g++ -g main.cpp \
-inference/inference.cpp \
-utils/math.cpp \
-postprocess/nms.cpp \
-postprocess/decode.cpp \
-postprocess/drawing.cpp \
+model/model.cpp \
+utils/nms.cpp \
+drawing/drawing.cpp \
+pipeline/process.cpp \
 -o yolo \
 -I. \
 -I/opt/onnxruntime/include \

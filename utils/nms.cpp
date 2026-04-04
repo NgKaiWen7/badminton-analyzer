@@ -1,18 +1,20 @@
 #include "nms.h"
+#include "detection/detection.h"
 #include <algorithm>
 #include <iostream>
 
 static float compute_iou(const Detection &a, const Detection &b)
 {
-    float ax = a.bounding_box[0];
-    float ay = a.bounding_box[1];
-    float aw = a.bounding_box[2];
-    float ah = a.bounding_box[3];
+    float ax = a.bounding_box.x;
+    float ay = a.bounding_box.y;
+    float aw = a.bounding_box.w;
+    float ah = a.bounding_box.h;
 
-    float bx = b.bounding_box[0];
-    float by = b.bounding_box[1];
-    float bw = b.bounding_box[2];
-    float bh = b.bounding_box[3];
+    float bx = b.bounding_box.x;
+    float by = b.bounding_box.y;
+    float bw = b.bounding_box.w;
+    float bh = b.bounding_box.h;
+
     float x1 = std::max(ax - aw / 2, bx - bw / 2);
     float y1 = std::max(ay - ah / 2, by - bh / 2);
     float x2 = std::min(ax + aw / 2, bx + bw / 2);
@@ -34,7 +36,7 @@ std::vector<Detection> apply_nms(
     std::sort(sorted.begin(), sorted.end(),
               [](const Detection& a, const Detection& b)
               {
-                  return a.conf > b.conf;
+                  return a.bounding_box.conf > b.bounding_box.conf;
               });
 
     for (const auto& det : sorted)
