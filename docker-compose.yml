@@ -1,0 +1,10 @@
+version: "3.9"
+
+services:
+  yolo_cpp:
+    build: .
+    container_name: yolo_cpp_container
+    runtime: nvidia
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+    command: ./yolo
