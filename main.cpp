@@ -1,11 +1,43 @@
 #include <iostream>
-#include "model/model.h"
+#include <string>
 #include "pipeline/process.h"
+#include "model/model.h"
 
-int main()
+bool is_image(const std::string& path)
 {
-    Model model("yolo26n-pose.onnx");
-    process_image("test.png", model);
+    std::string ext = path.substr(path.find_last_of('.') + 1);
+    std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
 
-    return 0;
+    return (ext == "jpg" || ext == "jpeg" || ext == "png");
+}
+
+bool is_video(const std::string& path)
+{
+    std::string ext = path.substr(path.find_last_of('.') + 1);
+    std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
+
+    return (ext == "mp4" || ext == "h265" || ext == "avi" || ext == "mkv");
+}
+
+extern "C" {
+
+void run_inference(const char* model_path,
+                   const char* input_path,
+                   const char* output_path)
+{
+    Model model(model_path);
+
+    std::string input(input_path);
+    std::string output(output_path);
+
+    if (is_image(input))
+    {
+        process_image(input, model);
+    }
+    else if (is_video(input))
+    {
+        process_video(input, output, model);
+    }
+}
+
 }

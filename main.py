@@ -1,29 +1,62 @@
-# Install ultralytics if not yet installed:
-# pip install ultralytics opencv-python
+import os
+import uuid
+import ctypes
+from fastapi import FastAPI, UploadFile, File
+from fastapi.responses import FileResponse
 
-from ultralytics import YOLO
-import cv2
+# -------------------------
+# Config
+# -------------------------
+MODEL_PATH = "model.onnx"
+LIB_PATH = "./libinfer.so"
+TMP_DIR = "/tmp"
 
-# Load YOLOv8 pose model (pretrained)
-model = YOLO("yolov8n-pose.pt")  # lightweight pose model, you can change to yolov8m-pose.pt for more accuracy
+os.makedirs(TMP_DIR, exist_ok=True)
 
-# Load an image
-image_path = "test.png"  # path to your image
-image = cv2.imread(image_path)
+# -------------------------
+# Load C++ shared library
+# -------------------------
+lib = ctypes.CDLL(LIB_PATH)
 
-# Run pose estimation
-results = model.predict(image)
-print(results[0].boxes.data)
-print(results[0].boxes.conf)
-exit()
+# define function signatures
+lib.run_inference.argtypes = [
+    ctypes.c_char_p,  # model
+    ctypes.c_char_p,  # input
+    ctypes.c_char_p   # output
+]
 
-for result in results:
-    xy = result.keypoints.xy
-    xyn = result.keypoints.xyn
-    kpts = result.keypoints.data
-    print(kpts)
+# -------------------------
+# FastAPI app
+# -------------------------
+app = FastAPI()
 
-    xy = xy.numpy()
-    for x, y in xy[0]:
-        cv2.circle(image, [int(x), int(y)], 3, (0, 0, 255), -1)
-    cv2.imwrite("output.jpg", image)
+
+@app.get("/")
+def root():
+    return {"status": "ok"}
+
+
+@app.post("/infer")
+async def infer(file: UploadFile = File(...)):
+    # generate unique filenames
+    ext = file.filename.split(".")[-1]
+    input_path = os.path.join(TMP_DIR, f"{uuid.uuid4()}.{ext}")
+    output_path = os.path.join(TMP_DIR, f"{uuid.uuid4()}_out.mp4")
+
+    # save uploaded file
+    with open(input_path, "wb") as f:
+        f.write(await file.read())
+
+    # call C++ inference
+    lib.run_inference(
+        b"yolo26n-pose.onnx",
+        input_path.encode(),
+        output_path.encode()
+    )
+
+    # return result file
+    if os.path.exists(output_path):
+        return FileResponse(output_path, media_type="video/mp4")
+
+    # fallback (e.g. image case)
+    return {"message": "processed", "input": input_path}

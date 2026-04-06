@@ -10,7 +10,9 @@ RUN apt-get update && apt-get install -y \
     libopencv-dev \
     pkg-config \
     gdb \
-    libcudnn9-cuda-13
+    libcudnn9-cuda-13 \
+    python3 \
+    python3-pip
 
 # install onnxruntime
 RUN mkdir -p /opt/onnxruntime \
@@ -21,6 +23,6 @@ RUN mkdir -p /opt/onnxruntime \
 ENV ONNXRUNTIME_DIR=/opt/onnxruntime
 COPY . /workspace
 WORKDIR /workspace
-
+RUN pip install --no-cache-dir python-multipart fastapi uvicorn numpyi
 RUN bash compile.sh
-CMD ["./yolo"]
+CMD ["uvicorn", "api:app", "--host", "0.0.0.0", "--port", "8000"]

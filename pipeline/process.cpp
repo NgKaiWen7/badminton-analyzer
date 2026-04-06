@@ -16,16 +16,21 @@ void process_video(const std::string& input,
 
     cv::VideoWriter writer(
         output,
-        cv::VideoWriter::fourcc('M','J','P','G'),
+        cv::VideoWriter::fourcc('m','p','4','v'),
         fps,
         cv::Size(w, h)
     );
 
     cv::Mat frame;
 
+    int processed_frame = 0;
     while (cap.read(frame)) {
-        std::vector<Detection> detection = model.process_frame(0.5, frame);
+        processed_frame ++;
+        std::cout << "Processing " << processed_frame << std::endl;
+        std::vector<Detection> detection = model.process_frame(0.2, frame);
+        draw_output(detection, frame);
         writer.write(frame);
+
     }
 }
 
