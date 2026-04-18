@@ -1,4 +1,4 @@
-#include "detection/detection.h"
+#include "detection.h"
 #include "model.h"
 #include "utils/nms.h"
 #include <iostream>
@@ -131,6 +131,6 @@ std::vector<Detection> Model::process_frame(float conf, const cv::Mat &frame)
     float y_scale = h / get_input_height();
 
     auto detections = decode_output(raw_output, x_scale, y_scale, conf);
-    auto output = apply_nms(detections, 0.8);
-    return output;
+    // auto output = apply_nms(detections, 0.8);
+    return detections;
 }

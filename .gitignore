@@ -5,3 +5,7 @@
 *.pt
 *.json
 *.pyc
+eigen/**
+__pycache__/
+build/
+bytetrack/**

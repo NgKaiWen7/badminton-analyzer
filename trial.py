@@ -1,15 +1,13 @@
-from ultralytics import YOLO
-import torch
-import cv2
+import requests
 
-model = YOLO("yolov8n-pose.pt")
+url = "http://127.0.0.1:8000/infer"
 
-image = cv2.imread("test.png")
-img = model.preprocess(image)  # internal preprocessing
+with open("/home/nkw/Downloads/test2.mp4", "rb") as f:
+    files = {"file": ("/home/nkw/Downloads/test2.mp4", f, "video/mp4")}
+    response = requests.post(url, files=files)
 
-# Forward pass through the raw model
-with torch.no_grad():
-    preds = model.model(img)   # <-- raw output
+print(response.status_code)
 
-print(type(preds))
-print(preds[0].shape)
+# if video returned
+with open("output.mp4", "wb") as out:
+    out.write(response.content)

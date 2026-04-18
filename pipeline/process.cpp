@@ -3,6 +3,7 @@
 #include <drawing/drawing.h>
 #include <detection/detection.h>
 #include <model/model.h>
+#include "bytetrack/bytetrack.hpp"
 
 void process_video(const std::string& input,
                    const std::string& output,
@@ -27,10 +28,9 @@ void process_video(const std::string& input,
     while (cap.read(frame)) {
         processed_frame ++;
         std::cout << "Processing " << processed_frame << std::endl;
-        std::vector<Detection> detection = model.process_frame(0.2, frame);
+        std::vector<Detection> detection = model.process_frame(0.0, frame);
         draw_output(detection, frame);
         writer.write(frame);
-
     }
 }
 

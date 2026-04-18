@@ -22,6 +22,7 @@ RUN mkdir -p /opt/onnxruntime \
 
 ENV ONNXRUNTIME_DIR=/opt/onnxruntime
 COPY . /workspace
+COPY bytetrack /opt/bytetrack
 WORKDIR /workspace
 RUN pip install --no-cache-dir python-multipart fastapi uvicorn numpyi
 RUN bash compile.sh

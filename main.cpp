@@ -2,6 +2,7 @@
 #include <string>
 #include "pipeline/process.h"
 #include "model/model.h"
+#include "bytetrack/bytetrack.hpp"
 
 bool is_image(const std::string& path)
 {
@@ -41,3 +42,20 @@ void run_inference(const char* model_path,
 }
 
 }
+
+/*
+int main() {
+    KalmanFilter kf;
+
+    Eigen::Matrix<float, 4, 1> z;
+    z << 100, 200, 0.5, 180;
+
+    kf.initiate(z);
+
+    kf.predict();
+    kf.set_noise(kf.x(3));
+    kf.update(z);
+    std::cout<<"Success" << std::endl;
+
+    return 0;
+}*/
