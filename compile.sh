@@ -29,15 +29,17 @@ drawing/drawing.cpp \
 pipeline/process.cpp \
 -o libinfer.so \
 -I. \
--I./eigen \
+-I/usr/include/eigen3 \
 -I./detection \
 -I./model \
 -I./utils \
 -I./drawing \
 -I./pipeline \
 -I/opt/onnxruntime/include \
+-I/opt/bytetrack \
 -L/opt/onnxruntime/lib \
+-L/opt/bytetrack \
 -lonnxruntime \
--I/opt/bytetrack/include \
--Wl,-rpath,/opt/onnxruntime/lib \
+-lbytetrack \
+-Wl,-rpath,/opt/onnxruntime/lib:/opt/bytetrack \
 `pkg-config --cflags --libs opencv4`

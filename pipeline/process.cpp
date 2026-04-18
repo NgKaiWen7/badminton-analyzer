@@ -25,11 +25,34 @@ void process_video(const std::string& input,
     cv::Mat frame;
 
     int processed_frame = 0;
+    bytetrack::ByteTracker tracker(0.8f, 0.2f, 0.3f, 25);
     while (cap.read(frame)) {
         processed_frame ++;
-        std::cout << "Processing " << processed_frame << std::endl;
-        std::vector<Detection> detection = model.process_frame(0.0, frame);
-        draw_output(detection, frame);
+        std::cout << "Processing Frame: " << processed_frame << std::endl;
+        std::vector<Detection> detection = model.process_frame(0.2, frame);
+        std::vector<bytetrack::DetectionBox> results;
+
+        for (const auto& det : detection) {
+            const auto& box = det.bounding_box;
+        
+            float x1 = static_cast<float>(box.x);
+            float y1 = static_cast<float>(box.y);
+            float x2 = static_cast<float>(box.w);
+            float y2 = static_cast<float>(box.h);
+            float conf = box.conf;
+            int cls = 0;
+            results.push_back({x1, y1, x2, y2, conf, cls});
+        }
+        
+        std::vector<bytetrack::TrackResult> tracked_output = tracker.update(results);
+        
+        std::vector<Detection> tracked_detections;
+        for (auto& track : tracked_output) {
+            Detection& det = detection[track.idx];
+            det.id = track.track_id;
+            tracked_detections.push_back(det);
+        }
+        draw_output(tracked_detections, frame);
         writer.write(frame);
     }
 }

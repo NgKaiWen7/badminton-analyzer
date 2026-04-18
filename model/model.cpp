@@ -103,14 +103,13 @@ std::vector<Detection> Model::decode_output(Ort::Value &output, float x_scale, f
             bounding_box.w = int(pred[2] * x_scale);
             bounding_box.h = int(pred[3] * y_scale);
             bounding_box.conf = obj_conf;
-
             std::vector<Keypoints> keypoints;
             for (int k = 6; k < 57; k += 3)
             {
                 Keypoints keypoint;
                 keypoint.x = int (pred[k] * x_scale);
-                keypoint.y = int (pred[k+ 1] * y_scale);
-                keypoint.conf = pred[k+ 2];
+                keypoint.y = int (pred[k+1] * y_scale);
+                keypoint.conf = pred[k+2];
                 keypoints.push_back(keypoint);
             }
             Detection dect = {i, bounding_box, keypoints};

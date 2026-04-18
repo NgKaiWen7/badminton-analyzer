@@ -28,7 +28,7 @@ struct BoundingBox{
 };
 
 struct Detection {
-    int index;
+    int id;
     BoundingBox bounding_box;
     std::vector<Keypoints> key_points;
 };
