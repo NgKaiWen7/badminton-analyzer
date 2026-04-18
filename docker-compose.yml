@@ -1,0 +1,13 @@
+version: "3.9"
+
+services:
+  yolo_cpp:
+    build: .
+    container_name: yolo_cpp_container
+    runtime: nvidia
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - LD_LIBRARY_PATH=/opt/onnxruntime/lib
+    ports:
+      - "8000:8000"
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --workers 1
